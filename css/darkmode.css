@@ -1,0 +1,10 @@
+body.dark-mode {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.dark-mode,
+.mode {
+  background-color: transparent;
+  color: #fff;
+}
