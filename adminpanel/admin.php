@@ -1,35 +1,40 @@
-<?php 
-    // require "session.php";
-    require "koneksi.php";
+<?php
+// require "session.php";
+require "koneksi.php";
 
-    session_start();
+session_start();
 
-    if( !isset($_SESSION["login"]) ) {
-        header("Location: ../adminpanel/index.php");
-        exit;
-    }
-    require '../functions.php';
+// if( !isset($_SESSION["login"]) ) {
+//     header("Location: adminpanel/admin.php");
+//     exit;      
+// }
 
-    $queryKategori = mysqli_query($con, "SELECT * FROM kategori");
-    $jumlahKategori = mysqli_num_rows($queryKategori);
 
-    $queryProduk = mysqli_query($con, "SELECT * FROM produk");
-    $jumlahProduk = mysqli_num_rows($queryProduk);
+$queryKategori = mysqli_query($con, "SELECT * FROM kategori");
+$jumlahKategori = mysqli_num_rows($queryKategori);
+
+$queryProduk = mysqli_query($con, "SELECT * FROM produk");
+$jumlahProduk = mysqli_num_rows($queryProduk);
 
 ?>
 
 
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
+    <title>Dashboard | Admin</title>
+
+    <!-- Link Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <link rel="stylesheet" href="../css/darkmode.css" >
-    
-  </head>
-  <style>
+
+    <!--  -->
+    <link rel="stylesheet" href="../css/darkmode.css">
+</head>
+
+<style>
     .kotak {
         border: solid;
     }
@@ -38,43 +43,38 @@
         background-color: #0a6b4a;
         border-radius: 15px;
     }
+
     .summary-produk {
         background-color: #0a516b;
         border-radius: 15px;
-        
     }
 
     #footer {
-        /* position: absolute; */
         margin-top: 425px;
         bottom: 0;
         width: 100%;
     }
+</style>
 
-    
-
-
-
-  </style>
-
-
-
-  <body>
+<body>
     <!-- navbar -->
-    <?php require "navbar.php"; ?>
+    <?php require "partials/navbar.php"; ?>
     <!-- navbar -->
 
     <!-- container -->
     <div class="container mt-5 breadcrumb">
+
+        <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item" aria-current="page">
-                   <i class="fas fa-home text-black-60"></i> Home
+                    <i class="fas fa-home text-black-60"></i> Home
                 </li>
-                
             </ol>
         </nav>
-        <h2></h2>
+        <!-- Breadcrumb -->
+
+        <!-- Card -->
         <div class="container mt-5">
             <div class="row">
                 <div class="col-lg-4 col-md-6 col-12 mb-3">
@@ -85,7 +85,7 @@
                             </div>
                             <div class="col-6 text-white">
                                 <h3 class="fs-2">Kategori</h3>
-                                <p class="fs-4"><?php echo $jumlahKategori;?> Kategori</p>
+                                <p class="fs-4"><?php echo $jumlahKategori; ?> Kategori</p>
                                 <p><a href="kategori.php" class="text-decoration-none text-white">Lihat Detail</a></p>
                             </div>
                         </div>
@@ -108,38 +108,19 @@
                 </div>
             </div>
         </div>
+        <!-- Card -->
     </div>
     <!-- container -->
 
     <!-- Footer -->
-    <footer class="bg-dark text-white p-4" id="footer">
-      <div class="container">
-        <div class="row mt-2">
-          <div class="col-md-6 text-md-start text-center pt-2 pb-2">
-            <a href="#" class="text-decoration-none">
-              <img src="../assets/logo2.png" style="width: 40px" />
-            </a>
-            <span>Copyright @2023 | Created by <a href="#" class="text-decoration-none text-white fw-bold">Dzikri Setiawan</a> </span>
-          </div>
-
-          <div class="col-md-6 text-md-end text-center pt-2 pb-2">
-            <a href="https://instagram.com/dzikrisee" target="_blank" class="text-decoration-none">
-                <i class="fa fa-instagram fa-xl text-white " aria-hidden="true"></i>
-            </a>
-            <a href="#" class="text-decoration-none ms-1">
-                <i class="fa fa-twitter fa-xl text-white" aria-hidden="true"></i>
-            </a>
-            <a href="#" class="text-decoration-none ms-1">
-                <i class="fa fa-github fa-xl text-white" aria-hidden="true"></i>
-            </a>
-            
-          </div>
-        </div>
-      </div>
-    </footer>
+    <?php require "partials/footer.php" ?>
     <!-- Akhir Footer -->
-    <script src="../js/darkmode.js"></script>
+
+    <!-- Script Fontawesome -->
     <script src="https://kit.fontawesome.com/84b8f8fd02.js" crossorigin="anonymous"></script>
+
+    <!-- Script Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-  </body>
+</body>
+
 </html>

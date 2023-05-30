@@ -7,9 +7,14 @@ if( isset($_POST["register"]) ) {
         echo "<script>
             alert('user baru berhasil ditambahkan!');
             </script>";
+    ?>
+        <meta http-equiv="refresh" content="0; url=login-user.php" />
+    <?php
+                
     } else {
         echo mysqli_error($conn);
     }
+    
 }
 
 
@@ -23,8 +28,12 @@ if( isset($_POST["register"]) ) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Halaman Registrasi</title>
+    <title>Jo.Store | Registrasi</title>
+    
+    <!-- Link CSS -->
     <link rel="stylesheet" href="css/registrasi.css" />
+
+    <!-- Link Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous" />
     <style>
         label {
@@ -42,14 +51,14 @@ if( isset($_POST["register"]) ) {
                 <div class="col">
                   <h3>
                     <a class="navbar-brand" href="#">
-                      <img src="assets/logo.png" alt="Logo" width="25" height="25" class="" />
+                      <img src="assets/logo2.png" alt="Logo" width="30" height="30" class="" />
                       Jo.<strong>Store</strong>
                     </a>
                   </h3>
                 </div>
                 <div class="col"></div>
                 <div class="col text-end">
-                  <button type="button" class="btn-close" aria-label="Close" onclick="location.href='login.php'"></button>
+                  <button type="button" class="btn-close" aria-label="Close" onclick="location.href='index.php'"></button>
                 </div>
               </div>
             </div>
@@ -85,38 +94,22 @@ if( isset($_POST["register"]) ) {
             <div class="d-grid mt-5">
               <button type="submit" name="register" class="btn btn-outline-primary textForm">Daftar</button>
             </div>
+            
             <div class="mt-1">
               <span class="textForm">Sudah Punya Akun ? <a href="login.php" class="textForm text-hover">Login Disini</a></span>
             </div>
           </form>
         </div>
+
+        <!-- Script Fontawesome -->
         <script src="https://kit.fontawesome.com/84b8f8fd02.js" crossorigin="anonymous"></script>
+
+        <!-- Scrippt Bootstrap -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
       </body>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
 
-
-    
-    <!-- <form action="" method="post">
-        <ul>
-            <li>
-                <label for="username">username :</label>
-                <input type="text " name="username" id="username">
-            </li>
-            <li>
-                <label for="password">password :</label>
-                <input type="password" name="password" id="password">
-            </li>
-            <li>
-                <label for="password2">konfirmasi password :</label>
-                <input type="password" name="password2" id="password2">
-            </li>
-            <li>
-                <button type="submit" name="register">Register!</button>
-            </li>
-        </ul>
-
-    </form> -->
 </body>
 </html>

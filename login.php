@@ -1,63 +1,56 @@
-<?php 
+<?php
 session_start();
-require 'functions.php';
 
-// cek cookie
-if( isset($_COOKIE['id']) && isset($_COOKIE['key']))  {
-    $id = $_COOKIE['id'];
-    $key = $_COOKIE['key'];
+// Koneksi ke database MySQL
+$host = 'localhost'; // Ganti dengan host Anda
+$db = 'db_jostore'; // Ganti dengan nama database Anda
+$user = 'root'; // Ganti dengan username database Anda
+$password = ''; // Ganti dengan password database Anda
 
-    // ambil username berdasarkan id
-    $result = mysqli_query($conn, "SELECT username FROM user WHERE id = $id");
-    $row = mysqli_fetch_assoc($result);
-
-    // cek cookie dan username
-    if( $key === hash('sha256', $row['username']) ) {
-        $_SESSION['login'] = true;
-    }
+$conn = new mysqli($host, $user, $password, $db);
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
 }
 
-if( isset($_SESSION["login"]) ) {
-    header("Location: adminpanel/admin.php");
-    exit;
-}
+// Periksa apakah data username dan password telah dikirimkan melalui form
+if (isset($_POST['username']) && isset($_POST['password'])) {
+    // Mengambil data dari form login
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
+    // Melakukan query ke database
+    $query = "SELECT * FROM user WHERE username = '$username'";
+    $result = $conn->query($query);
 
+    if ($result->num_rows == 1) {
+        // Login berhasil
+        $row = $result->fetch_assoc();
+        $role = $row['role'];
 
-if( isset($_POST["login"]) ) {
+        // Set session untuk role
+        $_SESSION['role'] = $role;
 
-    $username = $_POST["username"];
-    $password = $_POST["password"];
-
-    $result = mysqli_query($conn, "SELECT * FROM user WHERE username = '$username'");
-
-    // cek username
-    if( mysqli_num_rows($result) === 1 ) {
-
-        // cek password
-        $row = mysqli_fetch_assoc($result);
-        if( password_verify($password, $row["password"]) ) {
-            // set session
-            $_SESSION["login"] = true;
-
-            // cek remember me
-            if( isset($_POST["remember"]) ) {
-                // buat cookie
-                setcookie('id', $row['id'], time() + 60);
-                setcookie('key', hash('sha256', $row['username']),
-            time()+60 );
-            }
-
+        // Redirect sesuai role
+        if ($role == 'admin') {
             header("Location: adminpanel/admin.php");
-            exit;
+            exit(); // Tambahkan exit() setelah header() untuk menghentikan eksekusi script
+        } elseif ($role == 'user') {
+            header("Location: adminpanel/admin-user/admin-user.php");
+            exit(); // Tambahkan exit() setelah header() untuk menghentikan eksekusi script
+        } else {
+            // Role tidak valid
+            echo "Role tidak valid.";
         }
+    } else {
+        // Login gagal
+        $error = "Username atau password salah.";
     }
-
-    $error = true;
 }
+
+$conn->close();
 ?>
 
-
+<!-- Form Login -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,6 +66,12 @@ if( isset($_POST["login"]) ) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     
 </head>
+<style>
+  .login, .btn {
+    margin-top: 10px;
+  }
+</style>
+
 <body>
     <div class="container">
       <form class="form-container" action="" method="post">
@@ -81,7 +80,7 @@ if( isset($_POST["login"]) ) {
             <div class="col">
               <h3>
                 <a class="navbar-brand text-dark" href="#">
-                  <img src="assets/logo2.png" alt="Logo" width="25" height="25" class="" />
+                  <img src="assets/logo2.png" alt="Logo" width="30" height="30" class="" />
                   Jo.<strong>Store</strong>
                 </a>
               </h3>
@@ -92,14 +91,9 @@ if( isset($_POST["login"]) ) {
             </div>
           </div>
         </div>
+
         <div class="text-center mb-3">
           <h4>Masuk</h4>
-
-          <!-- cek username / password -->
-          <?php if( isset($error) ) : ?>
-            <p style="color: red; font-style: italic; font-size: 10px;">Username / Password Salah !</p>
-          <?php endif; ?>
-          <!-- cek username / password -->
         </div>
 
         <div class="mb-3">
@@ -117,17 +111,24 @@ if( isset($_POST["login"]) ) {
           </div>
         </div>
 
-        <div style="margin-top: -13px" class="text-end mb-5">
-          <a href="" class="textForm text-hover">Lupa Password ?</a>
-        </div>
+        
 
-        <div class="d-grid ">
+        <div class="d-grid login">
           <button type="submit" class="btn btn-outline-primary textForm" name="login">Masuk</button>
         </div>
 
         <div class="mt-1">
           <span class="textForm">Belum punya akun ? <a href="registrasi.php" class="textForm text-hover">Daftar</a></span>
         </div>
+
+        <!-- cek username / password -->
+          <?php if( isset($error) ) : ?>
+            <div class="alert alert-danger mt-2" role="alert">
+                Username / Password Salah
+            </div>
+          <?php endif; ?>
+          <!-- cek username / password -->
+
       </form>
     </div>
     <!-- script fontawesome -->

@@ -25,6 +25,8 @@
   }
 
   $countData = mysqli_num_rows($queryProduk);
+
+
 ?>
 
 
@@ -34,10 +36,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Halaman Produk</title>
+    <title>Jo.Store | Produk</title>
+
+    <!-- Link Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous" />
+
+    <!-- Link CSS  -->
     <link rel="stylesheet" href="../css/styleProduk.css" />
-    <link rel="stylesheet" href="../fontawesome/all.min" />
+
   </head>
   <body>
     <!-- Awal Navbar -->
@@ -51,9 +57,9 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <form class="d-flex ms-auto my-4" method="get" action="produk.php">
-            <input class="form-control me-2" type="text" placeholder="Cari Barang Anda" aria-label="Search" name="keyword"/>
-            <button class="btn btn-light" type="submit" ><i class="fa fa-search" aria-hidden="true"></i></button>
+          <form class="d-flex ms-auto my-4" id="form-cari">
+            <input class="form-control me-2" type="text" placeholder="Cari Barang Anda" aria-label="Search" name="keyword" id="keyword" />
+            <button class="btn btn-light" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
           </form>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
@@ -63,7 +69,7 @@
               <a class="nav-link" href="produk.php">Produk </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="../login.php">Login admin <i class="fa fa-sign-out fa-md" aria-hidden="true"></i></a>
+              <a class="nav-link" href="../login.php">Login User <i class="fa fa-sign-out fa-md" aria-hidden="true"></i></a>
             </li>
           </ul>
         </div>
@@ -97,9 +103,9 @@
         </div>
 
         <!-- Card Produk -->
-        <div class="col-lg-9 mt-2">
+        <div class="col-lg-9 mt-2" >
           <h3 class="text-center fw-bold mb-2">Produk</h3>
-          <div class="row">
+          <div class="row" id="container">
             <?php 
               if($countData<1){
             ?>
@@ -133,33 +139,40 @@
     <!-- Kategori List -->
 
     <!-- Footer -->
-    <footer class="bg-light p-5 mt-5">
+    <footer class="bg-dark text-white p-4" id="footer">
       <div class="container">
         <div class="row mt-2">
           <div class="col-md-6 text-md-start text-center pt-2 pb-2">
-            <a href="#" class="text-decoration-none">
-              <img src="../assets/logo2.png" style="width: 40px" />
-            </a>
-            <span>Copyright @2023 | Created with feel by <a href="#" class="text-decoration-none text-dark fw-bold">Dzikri Setiawan</a> </span>
+            <span>Copyright &copy;2023 | Created by <a href="#" class="text-decoration-none text-white fw-bold">Dzikri Setiawan</a> </span>
           </div>
 
           <div class="col-md-6 text-md-end text-center pt-2 pb-2">
             <a href="https://instagram.com/dzikrisee" target="_blank" class="text-decoration-none">
-              <i class="fa fa-instagram fa-2xl text-dark" aria-hidden="true"></i>
+                <i class="fa fa-instagram fa-xl text-white " aria-hidden="true"></i>
             </a>
-            <a href="#" class="text-decoration-none ms-2">
-              <i class="fa fa-twitter-square fa-2xl text-dark" aria-hidden="true"></i>
+            <a href="https://twitter.com/dzikriseee#" target="_blank" class="text-decoration-none ms-1">
+                <i class="fa fa-twitter fa-xl text-white" aria-hidden="true"></i>
             </a>
-            <a href="#" class="text-decoration-none ms-2">
-              <i class="fa fa-github-square fa-2xl text-dark" aria-hidden="true"></i>
+            <a href="https://github.com/dzikrisee" target="_blank" class="text-decoration-none ms-1">
+                <i class="fa fa-github fa-xl text-white" aria-hidden="true"></i>
             </a>
+            
           </div>
         </div>
       </div>
     </footer>
     <!-- Akhir Footer -->
 
+    <!-- Script Ajax -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="ajax/ajax.js"></script>
+    <!-- Script Ajax -->
+
+    <!-- Script Fontawesome -->
     <script src="https://kit.fontawesome.com/84b8f8fd02.js" crossorigin="anonymous"></script>
+
+    <!-- Script Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+
   </body>
 </html>
