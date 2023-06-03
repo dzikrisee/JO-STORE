@@ -1,5 +1,6 @@
 <?php
 require "koneksi.php";
+require "../vendor/autoload.php"; // Include the mPDF library
 
 $query = mysqli_query($con, "SELECT a.*, b.nama AS nama_kategori FROM produk a JOIN kategori
     b ON a.kategori_id=b.id");
@@ -16,6 +17,89 @@ function generateRandomString($length = 10)
         $randomString .= $characters[random_int(0, $charactersLength - 1)];
     }
     return $randomString;
+}
+
+// Generate PDF report
+if (isset($_GET['generate_pdf'])) {
+    $mpdf = new \Mpdf\Mpdf(); // Create an instance of mPDF
+
+    ob_start(); // Start output buffering
+
+?>
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin | Produk</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <div class="container mt-5 mb-5">
+            <div class="mt-3">
+                <h2>List Produk</h2>
+                <div class="table-responsive mt-5">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Foto</th>
+                                <th>Nama</th>
+                                <th>Kategori</th>
+                                <th>Harga</th>
+                                <th>Stok</th>
+                            </tr>
+                        </thead>
+                        <br><br>
+                        <tbody>
+                            <?php
+                            if ($jumlahProduk == 0) {
+                            ?>
+                                <tr>
+                                    <td colspan="6" class="text-center">Data produk tidak tersedia</td>
+                                </tr>
+                                <?php
+                            } else {
+                                $jumlah = 1;
+                                while ($data = mysqli_fetch_array($query)) {
+                                ?>
+                                    <tr>
+                                        <td><?php echo $jumlah; ?></td>
+                                        <td>
+                                            <img src="image/<?php echo $data['foto']; ?>" style="width: 70px;">
+                                        </td>
+                                        <td><?php echo $data['nama']; ?></td>
+                                        <td><?php echo $data['nama_kategori']; ?></td>
+                                        <td><?php echo $data['harga']; ?></td>
+                                        <td><?php echo $data['ketersediaan_stok']; ?></td>
+                                    </tr>
+                            <?php
+                                    $jumlah++;
+                                }
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    </html>
+<?php
+
+    $html = ob_get_contents();
+    ob_end_clean();
+
+    // Set PDF configuration
+    $mpdf->SetHeader('Jo.Store'); // Set header
+    $mpdf->WriteHTML($html);
+    $mpdf->Output(); // Output the PDF as a download
+
+    exit();
 }
 ?>
 
@@ -55,128 +139,13 @@ function generateRandomString($length = 10)
         </nav>
         <!-- breadcrumb -->
 
-        <!-- tambah produk -->
-        <div class="my-5 col-12 col-md-6">
-            <h3>Tambah Produk</h3>
-
-            <form action="" method="post" enctype="multipart/form-data">
-                <div>
-                    <label for="nama">Nama</label>
-                    <input type="text" id="nama" name="nama" class="form-control" required>
-                </div>
-                <div>
-                    <label for="kategori">Kategori</label>
-                    <select name="kategori" id="kategori" class="form-control" required>
-                        <option value="">Pilih Satu</option>
-                        <?php
-                        while ($data = mysqli_fetch_array($queryKategori)) {
-                        ?>
-                            <option value="<?php echo $data['id']; ?>"><?php echo $data['nama']; ?></option>
-                        <?php
-                        }
-                        ?>
-                    </select>
-                </div>
-                <div>
-                    <label for="harga">Harga</label>
-                    <input type="number" class="form-control" name="harga" required>
-                </div>
-                <div>
-                    <label for="foto">Foto</label>
-                    <input type="file" name="foto" id="foto" class="form-control">
-                </div>
-                <div>
-                    <label for="detail">Detail</label>
-                    <textarea name="detail" id="detail" cols="30" rows="10" class="form-control"></textarea>
-                </div>
-                <div>
-                    <label for="ketersediaan_stok">Ketersediaan Stok</label>
-                    <select name="ketersediaan_stok" id="ketersediaan_stok" class="form-control">
-                        <option value="tersedia">Tersedia</option>
-                        <option value="habis">Habis</option>
-                    </select>
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-primary mt-2" name="simpan">Simpan</button>
-                </div>
-            </form>
-
-            <?php
-            if (isset($_POST['simpan'])) {
-                $nama = htmlspecialchars($_POST['nama']);
-                $kategori = htmlspecialchars($_POST['kategori']);
-                $harga = htmlspecialchars($_POST['harga']);
-                $detail = htmlspecialchars($_POST['detail']);
-                $ketersediaan_stok = htmlspecialchars($_POST['ketersediaan_stok']);
-
-                $target_dir = "image/";
-                $nama_file = basename($_FILES["foto"]["name"]);
-                $target_file = $target_dir . $nama_file;
-                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                $image_size = $_FILES['foto']['size'];
-                $random_name = generateRandomString(20);
-                $new_name = $random_name . "." . $imageFileType;
-
-                if ($nama == '' || $kategori == '' || $harga == '') {
-            ?>
-                    <div class="alert alert-warning mt-3" role="alert">
-                        Nama, Kategori dan Harga wajib di isi
-                    </div>
-
-                    <?php
-                } else {
-                    if ($nama_file != '') {
-                        if ($image_size > 500000) {
-                    ?>
-                            <div class="alert alert-warning mt-3" role="alert">
-                                File tidak boleh lebih dari 500kb
-                            </div>
-                            <?php
-                        } else {
-                            if ($imageFileType != 'jpg' && $imageFileType != 'png' && $imageFileType != 'gif') {
-                            ?>
-                                <div class="alert alert-warning mt-3" role="alert">
-                                    Format File harus jpg, png, atau gif
-                                </div>
-                        <?php
-                            } else {
-                                move_uploaded_file($_FILES["foto"]["tmp_name"], $target_dir .
-                                    $new_name);
-                            }
-                        }
-                    }
-
-                    // query insert to produk table
-                    $queryTambah = mysqli_query($con, "INSERT INTO produk (kategori_id, nama, harga, foto, detail, ketersediaan_stok) 
-                    VALUES ('$kategori', '$nama', '$harga', '$new_name', '$detail', '$ketersediaan_stok')");
-
-                    if ($queryTambah) {
-                        ?>
-                        <script>
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'Produk Berhasil di Tambahkan',
-                                showConfirmButton: false,
-                                timer: 2000
-                            })
-                        </script>
-
-                        <meta http-equiv="refresh" content="2; url=produk.php" />
-            <?php
-                    } else {
-                        echo mysqli_error($con);
-                    }
-                }
-            }
-            ?>
-        </div>
-
-
-        <div class="mt-3">
+        <!-- Container -->
+        <div class="mt-4">
             <h2>List Produk</h2>
-
-            <div class="table-responsive mt-5 mb-5">
+            <div>
+                <button type="submit" class="btn btn-primary mt-2" name="" onclick="location.href='tambah-produk.php'">Tambah Produk</button>
+            </div>
+            <div class=" table-responsive mt-1">
                 <table class="table">
                     <thead>
                         <tr>
@@ -223,7 +192,13 @@ function generateRandomString($length = 10)
                 </table>
             </div>
         </div>
+        <!-- Generate PDF -->
+        <div class="mb-5">
+            <a href="?generate_pdf" class="btn btn-primary">Generate PDF</a>
+        </div>
+        <!-- Generate PDF -->
     </div>
+    <!-- Container -->
 
     <!-- Footer -->
     <?php require "partials/footer.php" ?>

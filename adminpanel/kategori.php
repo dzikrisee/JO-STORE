@@ -1,6 +1,7 @@
 <?php
 // require "session.php";
 require "koneksi.php";
+require "../vendor/autoload.php"; // Include the mPDF library
 
 $queryKategori = mysqli_query($con, "SELECT * FROM kategori");
 $jumlahKategori = mysqli_num_rows($queryKategori);
@@ -8,6 +9,80 @@ $jumlahKategori = mysqli_num_rows($queryKategori);
 $queryProduk = mysqli_query($con, "SELECT * FROM produk");
 $jumlahProduk = mysqli_num_rows($queryProduk);
 
+// Generate PDF report
+if (isset($_GET['generate_pdf'])) {
+    $mpdf = new \Mpdf\Mpdf(); // Create an instance of mPDF
+
+    ob_start(); // Start output buffering
+
+?>
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin | Kategori</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <div class="container mt-5">
+            <div class="mt-3">
+                <h2>List Kategori</h2>
+                <div class="table-responsive mt-5">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Nama.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($jumlahKategori == 0) {
+
+                            ?>
+                                <tr>
+                                    <td colspan=3 class="text-center">Data Kategori tidak tersedia</td>
+                                </tr>
+                                <?php
+                            } else {
+                                $jumlah = 1;
+                                while ($data = mysqli_fetch_array($queryKategori)) {
+
+
+                                ?>
+                                    <tr>
+                                        <td><?php echo $jumlah; ?></td>
+                                        <td><?php echo $data['nama']; ?></td>
+                                    </tr>
+                            <?php
+                                    $jumlah++;
+                                }
+                            }
+
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    </body>
+
+    </html>
+<?php
+
+    $html = ob_get_contents();
+    ob_end_clean();
+
+    // Set PDF configuration
+    $mpdf->SetHeader('Jo.Store'); // Set header
+    $mpdf->WriteHTML($html);
+    $mpdf->Output(); // Output the PDF as a download
+
+    exit();
+}
 ?>
 
 
@@ -22,6 +97,13 @@ $jumlahProduk = mysqli_num_rows($queryProduk);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<style>
+    #footer {
+        margin-top: 200px;
+        bottom: 0;
+        width: 100%;
+    }
+</style>
 
 <body>
     <!-- Navbar -->
@@ -43,63 +125,13 @@ $jumlahProduk = mysqli_num_rows($queryProduk);
         </nav>
         <!-- breadcrumb -->
 
-        <!-- Tambah Kategori -->
-        <div class="my-5 col-12 col-md-6">
-            <h3>Tambah Kategori</h3>
-
-            <form action="" method="post">
-                <div>
-                    <label for="kategori">Kategori</label>
-                    <input type="text" id="kategori" name="kategori" placeholder="input nama kategori" class="form-control">
-                </div>
-                <div class="mt-2">
-                    <button class="btn btn-primary" type="submit" name="simpan_kategori">Simpan</button>
-                </div>
-            </form>
-
-            <?php
-            if (isset($_POST['simpan_kategori'])) {
-                $kategori = htmlspecialchars($_POST['kategori']);
-
-                $queryExist = mysqli_query($con, "SELECT nama FROM kategori WHERE nama='$kategori'");
-                $jumlahDataKategoriBaru = mysqli_num_rows($queryExist);
-
-                if ($jumlahDataKategoriBaru > 0) {
-            ?>
-                    <div class="alert alert-warning mt-3" role="alert">
-                        Kategori sudah ada
-                    </div>
-                    <?php
-                } else {
-                    $querySimpan = mysqli_query($con, "INSERT INTO kategori (nama) VALUES ('$kategori')");
-
-                    if ($querySimpan) {
-                    ?>
-                        <script>
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'Kategori Berhasil Tersimpan',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                        </script>
-
-                        <meta http-equiv="refresh" content="1; url=kategori.php" />
-            <?php
-                    } else {
-                        echo mysqli_error($con);
-                    }
-                }
-            }
-            ?>
-        </div>
-        <!-- Tambah Kategori -->
-
         <!-- List Kategori -->
-        <div class="mt-3">
+        <div class="mt-5">
             <h2>List Kategori</h2>
-            <div class="table-responsive mt-5">
+            <div>
+                <button type="submit" class="btn btn-primary mt-2" name="" onclick="location.href='tambah-kategori.php'">Tambah Kategori</button>
+            </div>
+            <div class="table-responsive mt-1">
                 <table class="table">
                     <thead>
                         <tr>
@@ -140,6 +172,12 @@ $jumlahProduk = mysqli_num_rows($queryProduk);
             </div>
         </div>
         <!-- List Kategori -->
+
+        <!-- Generate button -->
+        <div class="mt-3">
+            <a href="?generate_pdf" class="btn btn-primary">Generate PDF</a>
+        </div>
+        <!-- Generate button -->
     </div>
     <!-- Container -->
 

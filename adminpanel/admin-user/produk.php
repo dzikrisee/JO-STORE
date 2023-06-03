@@ -1,6 +1,5 @@
 <?php
 require "../koneksi.php";
-require "../../vendor/autoload.php"; // Include the mPDF library
 
 $query = mysqli_query($con, "SELECT a.*, b.nama AS nama_kategori FROM produk a JOIN kategori b ON a.kategori_id=b.id");
 $jumlahProduk = mysqli_num_rows($query);
@@ -18,88 +17,21 @@ function generateRandomString($length = 10)
     return $randomString;
 }
 
-// Generate PDF report
-if (isset($_GET['generate_pdf'])) {
-    $mpdf = new \Mpdf\Mpdf(); // Create an instance of mPDF
+// Ambil nilai keyword dari URL
+$keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
 
-    ob_start(); // Start output buffering
+// Buat query pencarian
+$searchQuery = "SELECT a.*, b.nama AS nama_kategori 
+                FROM produk a 
+                JOIN kategori b ON a.kategori_id=b.id
+                WHERE a.nama LIKE '%$keyword%'
+                ORDER BY a.nama ASC";
 
-?>
-    <!DOCTYPE html>
-    <html lang="en">
+// Eksekusi query pencarian
+$searchResult = mysqli_query($con, $searchQuery);
+$jumlahProduk = mysqli_num_rows($searchResult);
 
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Admin | Produk</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    </head>
 
-    <body>
-        <div class="container mt-5 mb-5">
-            <div class="mt-3">
-                <h2>List Produk</h2>
-                <div class="table-responsive mt-5">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Foto</th>
-                                <th>Nama</th>
-                                <th>Kategori</th>
-                                <th>Harga</th>
-                                <th>Stok</th>
-                            </tr>
-                        </thead>
-                        <br><br>
-                        <tbody>
-                            <?php
-                            if ($jumlahProduk == 0) {
-                            ?>
-                                <tr>
-                                    <td colspan="6" class="text-center">Data produk tidak tersedia</td>
-                                </tr>
-                                <?php
-                            } else {
-                                $jumlah = 1;
-                                while ($data = mysqli_fetch_array($query)) {
-                                ?>
-                                    <tr>
-                                        <td><?php echo $jumlah; ?></td>
-                                        <td>
-                                            <img src="../image/<?php echo $data['foto']; ?>" style="width: 70px;">
-                                        </td>
-                                        <td><?php echo $data['nama']; ?></td>
-                                        <td><?php echo $data['nama_kategori']; ?></td>
-                                        <td><?php echo $data['harga']; ?></td>
-                                        <td><?php echo $data['ketersediaan_stok']; ?></td>
-                                    </tr>
-                            <?php
-                                    $jumlah++;
-                                }
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </body>
-
-    </html>
-<?php
-
-    $html = ob_get_contents();
-    ob_end_clean();
-
-    // Set PDF configuration
-    $mpdf->SetHeader('Jo.Store'); // Set header
-    $mpdf->WriteHTML($html);
-    $mpdf->Output(); // Output the PDF as a download
-
-    exit();
-}
 ?>
 
 
@@ -114,14 +46,6 @@ if (isset($_GET['generate_pdf'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 </head>
 
-<style>
-    @media print {
-        .breadcrumb {
-            display: none;
-        }
-    }
-</style>
-
 <body>
     <!-- Awal Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-4 ">
@@ -134,7 +58,10 @@ if (isset($_GET['generate_pdf'])) {
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-
+                <form class="d-flex ms-auto my-4" method="get" action="produk.php">
+                    <input class="form-control me-2" type="text" placeholder="Cari Barang Anda" aria-label="Search" name="keyword" />
+                    <button class="btn btn-light" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link text-white" href="admin-user.php">Beranda</a>
@@ -179,7 +106,6 @@ if (isset($_GET['generate_pdf'])) {
         <!-- List Produk -->
         <div class="mt-3">
             <h2>List Produk</h2>
-
             <div class="table-responsive mt-5">
                 <table class="table">
                     <thead>
@@ -196,13 +122,21 @@ if (isset($_GET['generate_pdf'])) {
                         <?php
                         if ($jumlahProduk == 0) {
                         ?>
+                            <!-- Alert -->
                             <tr>
-                                <td colspan=6 class="text-center">Data produk tidak tersedia</td>
+                                <td colspan=6 class="text-center">
+                                    <?php if ($jumlahProduk == 0) : ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            Data produk tidak ditemukan.
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
+                            <!-- Alert -->
                             <?php
                         } else {
                             $jumlah = 1;
-                            while ($data = mysqli_fetch_array($query)) {
+                            while ($data = mysqli_fetch_array($searchResult)) {
                             ?>
                                 <tr>
                                     <td> <?php echo $jumlah; ?></td>
@@ -224,10 +158,6 @@ if (isset($_GET['generate_pdf'])) {
             </div>
         </div>
         <!-- List Produk -->
-
-        <div class="mt-3">
-            <a href="?generate_pdf" class="btn btn-primary">Generate PDF</a>
-        </div>
     </div>
     <!-- Container -->
 

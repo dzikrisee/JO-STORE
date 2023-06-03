@@ -22,6 +22,13 @@ $data = mysqli_fetch_array($query);
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<style>
+    #footer {
+        margin-top: 485px;
+        bottom: 0;
+        width: 100%;
+    }
+</style>
 
 <body>
     <!-- Navbar -->
@@ -55,7 +62,7 @@ $data = mysqli_fetch_array($query);
                     <input type="text" name="kategori" id="kategori" class="form-control" value="<?php echo $data['nama']; ?>">
                 </div>
 
-                <div class="mt-5 d-flex justify-content-between">
+                <div class="mt-2 d-flex justify-content-between">
                     <button type="submit" class="btn btn-primary" name="editBtn">Edit</button>
                     <button type="submit" class="btn btn-danger" name="deleteBtn">Hapus</button>
                 </div>
