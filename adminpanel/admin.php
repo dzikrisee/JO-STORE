@@ -4,10 +4,8 @@ require "koneksi.php";
 
 session_start();
 
-// if( !isset($_SESSION["login"]) ) {
-//     header("Location: adminpanel/admin.php");
-//     exit;      
-// }
+
+
 
 
 $queryKategori = mysqli_query($con, "SELECT * FROM kategori");
@@ -17,7 +15,6 @@ $queryProduk = mysqli_query($con, "SELECT * FROM produk");
 $jumlahProduk = mysqli_num_rows($queryProduk);
 
 ?>
-
 
 <!doctype html>
 <html lang="en">
@@ -49,6 +46,7 @@ $jumlahProduk = mysqli_num_rows($queryProduk);
         border-radius: 15px;
     }
 
+
     #footer {
         margin-top: 425px;
         bottom: 0;
@@ -62,7 +60,7 @@ $jumlahProduk = mysqli_num_rows($queryProduk);
     <!-- navbar -->
 
     <!-- container -->
-    <div class="container mt-5 breadcrumb">
+    <div class="container mt-5">
 
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
@@ -76,6 +74,11 @@ $jumlahProduk = mysqli_num_rows($queryProduk);
 
         <!-- Card -->
         <div class="container mt-5">
+            <div class="card mb-3 bg-light">
+                <div class="card-body ">
+                    <h4 class="card-title">Selamat Datang di Dashboard, <b><?= $_SESSION['username'] ?></b></h4>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-lg-4 col-md-6 col-12 mb-3">
                     <div class="summary-kategori p-3">

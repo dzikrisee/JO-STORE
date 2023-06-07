@@ -2,7 +2,7 @@
 // require "session.php";
 require "../koneksi.php";
 
-// session_start();
+session_start();
 
 // if( !isset($_SESSION["login"]) ) {
 //     header("Location: ../adminpanel/index.php");
@@ -104,11 +104,17 @@ $jumlahProduk = mysqli_num_rows($queryProduk);
         <li class="breadcrumb-item" aria-current="page">
           <i class="fas fa-home text-black-60"></i> Home
         </li>
-
       </ol>
     </nav>
-    <h2></h2>
+
+
+
     <div class="container mt-5">
+      <div class="card mb-3 bg-light">
+        <div class="card-body rounded">
+          <h4 class="card-title">Selamat Datang di Dashboard, <b><?= $_SESSION['username'] ?></b></h4>
+        </div>
+      </div>
       <div class="row">
         <div class="col-lg-4 col-md-6 col-12 mb-3">
           <div class="summary-kategori p-3">

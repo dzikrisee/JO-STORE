@@ -12,6 +12,11 @@ if ($conn->connect_error) {
   die("Koneksi gagal: " . $conn->connect_error);
 }
 
+if (isset($_SESSION["login"])) {
+  header("Location: adminpanel/admin.php");
+  exit;
+}
+
 // Periksa apakah data username dan password telah dikirimkan melalui form
 if (isset($_POST['username']) && isset($_POST['password'])) {
   // Mengambil data dari form login
@@ -27,10 +32,13 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     if ($result->num_rows == 1) {
       // Login berhasil
       $row = $result->fetch_assoc();
+      $username = $row['username'];
       $role = $row['role'];
 
+
       // Set session untuk role
-      $_SESSION['role'] = $role;
+      $_SESSION['username'] = $username;
+
 
       // Redirect sesuai role
       if ($role == 'admin') {
